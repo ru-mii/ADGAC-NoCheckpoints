@@ -17,7 +17,7 @@ namespace NoCheckpoints
 
         public const string pluginGuid = "35a4c8fa9e0e48488959afec25a1738b";
         public const string pluginName = "NoCheckpoints";
-        public const string pluginVersion = "1.0.0";
+        public const string pluginVersion = "2.0.0";
 
         public static string pluginPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -36,9 +36,9 @@ namespace NoCheckpoints
             // static logger
             pLogger = Logger;
 
-            // ClimberMain -> Update()
-            original.Add(AccessTools.Method(typeof(ClimberMain), "Update"));
-            patch.Add(AccessTools.Method(typeof(ClimberMain_Update), "Prefix"));
+            // SaveSystemJ -> GetPlayerData()
+            original.Add(AccessTools.Method(typeof(SaveSystemJ), "GetPlayerData"));
+            patch.Add(AccessTools.Method(typeof(SaveSystemJ_GetPlayerData), "Postfix"));
 
             // patch all
             for (int i = 0; i < original.Count; i++)
@@ -50,17 +50,16 @@ namespace NoCheckpoints
 
         #endregion LocalFunctions
 
-        #region ClimberMain
+        #region SaveSystemJ
 
-        public static class ClimberMain_Update
+        public static class SaveSystemJ_GetPlayerData
         {
-            public static bool Prefix(ClimberMain __instance)
+            public static void Postfix(ref PlayerData __result)
             {
-                __instance.saveAllowed = false;
-                return true;
+                __result = new PlayerData();
             }
         }
 
-        #endregion ClimberMain
+        #endregion SaveSystemJ
     }
 }
